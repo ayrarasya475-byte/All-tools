@@ -1,0 +1,15 @@
+{
+  "name": "NecroTools",
+  "description": "High-performance ecosystem for neural processing, core utility protocols, and advanced metadata extraction.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone",
+    "geolocation"
+  ],
+  "majorCapabilities": [
+    "AI Utilities",
+    "Developer Tools",
+    "Educational Resources",
+    "Productivity Suite"
+  ]
+}
