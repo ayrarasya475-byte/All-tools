@@ -50,7 +50,7 @@ export default function Profile({ setTheme, isDark }: ProfileProps) {
              <p className="text-[8px] text-white/30 uppercase font-mono">Access Level: {isOwner ? 'ROOT' : 'LEVEL_3'}</p>
            </div>
         </div>
-        <AdminPortal role={isOwner ? 'owner' : 'admin'} />
+        <AdminPortal role={isOwner ? 'owner' : 'admin'} onBack={() => setShowAdminPortal(false)} />
       </div>
     );
   }

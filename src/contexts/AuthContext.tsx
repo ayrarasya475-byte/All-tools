@@ -40,7 +40,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setUser(user);
       if (user) {
-        await syncUserProfile(user);
+        try {
+          await syncUserProfile(user);
+        } catch (e) {
+          console.error("Sync failed:", e);
+        }
         
         // Listen to profile changes (e.g. role updates, bans)
         const unsubProfile = onSnapshot(doc(db, 'users', user.uid), (snap) => {

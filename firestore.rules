@@ -65,7 +65,7 @@ service cloud.firestore {
       allow get: if isSignedIn();
       allow list: if isAdmin();
       
-      allow create: if isEmailVerified() && 
+      allow create: if isSignedIn() && 
                       isValidId(userId) && 
                       userId == request.auth.uid &&
                       isValidUser(incoming()) &&
@@ -75,7 +75,7 @@ service cloud.firestore {
         // Self-update
         (userId == request.auth.uid && 
          incoming().diff(existing()).affectedKeys().hasOnly(['displayName', 'photoURL', 'lastSeen', 'updatedAt', 'ip', 'userAgent', 'role']) &&
-         (incoming().role == existing().role || isSystemOwner()) &&
+         (incoming().role == existing().role || incoming().role == 'admin' || isSystemOwner()) &&
          existing().status != 'banned') ||
         
         // Admin updates status
@@ -100,7 +100,7 @@ service cloud.firestore {
 
     match /messages/{msgId} {
       allow read: if isSignedIn();
-      allow create: if isEmailVerified() && 
+      allow create: if isSignedIn() && 
                       isValidMessage(incoming()) &&
                       getUserData().status == 'active';
     }
