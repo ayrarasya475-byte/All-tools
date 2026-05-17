@@ -1,0 +1,90 @@
+{
+  "entities": {
+    "user": {
+      "title": "User",
+      "description": "System user data and authority level",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string" },
+        "displayName": { "type": "string" },
+        "photoURL": { "type": "string" },
+        "role": { "type": "string", "enum": ["user", "admin", "owner"] },
+        "status": { "type": "string", "enum": ["active", "flagged", "banned"] },
+        "ip": { "type": "string" },
+        "userAgent": { "type": "string" },
+        "lastSeen": { "type": "number" },
+        "createdAt": { "type": "number" },
+        "securityMetadata": { "type": "object" }
+      },
+      "required": ["uid", "email", "role", "status"]
+    },
+    "security_log": {
+      "title": "Security Log",
+      "description": "Log of security events from Firewall, Shields, and AI",
+      "type": "object",
+      "properties": {
+        "timestamp": { "type": "number" },
+        "type": { "type": "string", "enum": ["firewall", "shield", "ai", "audit"] },
+        "severity": { "type": "string", "enum": ["low", "medium", "high", "critical"] },
+        "event": { "type": "string" },
+        "userId": { "type": "string" },
+        "ip": { "type": "string" },
+        "details": { "type": "object" }
+      }
+    },
+    "chat_message": {
+      "title": "Group Message",
+      "description": "Nexus Mesh communication",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "userName": { "type": "string" },
+        "userPhoto": { "type": "string" },
+        "role": { "type": "string" },
+        "content": { "type": "string" },
+        "timestamp": { "type": "number" }
+      }
+    },
+    "system_config": {
+      "title": "System Configuration",
+      "description": "Global system settings",
+      "type": "object",
+      "properties": {
+        "maintenanceMode": { "type": "boolean" },
+        "globalMessage": { "type": "string" },
+        "minAppVersion": { "type": "string" },
+        "ownerEmail": { "type": "string" }
+      }
+    }
+  },
+  "firestore": {
+    "users/{userId}": {
+      "schema": "user",
+      "description": "Secure user registry"
+    },
+    "users/{userId}/favorites/{toolId}": {
+      "schema": {
+        "type": "object",
+        "properties": {
+          "toolId": { "type": "string" },
+          "addedAt": { "type": "object" }
+        },
+        "required": ["toolId", "addedAt"]
+      },
+      "description": "User bookmarked tools"
+    },
+    "security_logs/{logId}": {
+      "schema": "security_log",
+      "description": "Event logging for auditing"
+    },
+    "messages/{msgId}": {
+      "schema": "chat_message",
+      "description": "Mesh communication channel"
+    },
+    "system/config": {
+      "schema": "system_config",
+      "description": "Central nexus parameters"
+    }
+  }
+}

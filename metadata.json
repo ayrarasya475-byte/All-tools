@@ -1,15 +1,6 @@
 {
-  "name": "NecroTools",
-  "description": "High-performance ecosystem for neural processing, core utility protocols, and advanced metadata extraction.",
-  "requestFramePermissions": [
-    "camera",
-    "microphone",
-    "geolocation"
-  ],
-  "majorCapabilities": [
-    "AI Utilities",
-    "Developer Tools",
-    "Educational Resources",
-    "Productivity Suite"
-  ]
+  "name": "Cortex DevTools",
+  "description": "Professional developer utility suite with advanced security tools, real-time networking, and group collaboration.",
+  "requestFramePermissions": ["camera", "microphone", "geolocation"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

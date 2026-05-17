@@ -1,0 +1,117 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 0. Global Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // --- Helpers ---
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    
+    function isEmailVerified() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+
+    function getUserData() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (getUserData().role == 'admin' || getUserData().role == 'owner');
+    }
+
+    function isOwner() {
+      return isSignedIn() && (getUserData().role == 'owner' || request.auth.token.email == 'ayrarasya475@gmail.com');
+    }
+
+    function isSystemOwner() {
+      return isSignedIn() && request.auth.token.email == 'ayrarasya475@gmail.com';
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // --- Validation Blueprints ---
+    
+    function isValidUser(data) {
+      return data.uid == request.auth.uid &&
+             data.email == request.auth.token.email &&
+             data.role in ['user', 'admin', 'owner'] &&
+             data.status in ['active', 'flagged', 'banned'] &&
+             data.email is string && data.email.size() <= 256;
+    }
+
+    function isValidMessage(data) {
+      return data.userId == request.auth.uid &&
+             data.content is string && data.content.size() <= 2000 &&
+             data.timestamp is number;
+    }
+
+    // --- Collection Rules ---
+
+    match /users/{userId} {
+      allow get: if isSignedIn();
+      allow list: if isAdmin();
+      
+      allow create: if isEmailVerified() && 
+                      isValidId(userId) && 
+                      userId == request.auth.uid &&
+                      isValidUser(incoming()) &&
+                      (incoming().role == 'user' || (isSystemOwner() && incoming().role == 'owner')); // Allow owner bootstrapping
+      
+      allow update: if isSignedIn() && (
+        // Self-update
+        (userId == request.auth.uid && 
+         incoming().diff(existing()).affectedKeys().hasOnly(['displayName', 'photoURL', 'lastSeen', 'updatedAt', 'ip', 'userAgent', 'role']) &&
+         (incoming().role == existing().role || isSystemOwner()) &&
+         existing().status != 'banned') ||
+        
+        // Admin updates status
+        (isAdmin() && 
+         incoming().diff(existing()).affectedKeys().hasOnly(['status', 'securityMetadata', 'updatedAt']) &&
+         (existing().role != 'owner' || isOwner())) ||
+         
+        // Owner updates roles
+        (isOwner() && 
+         incoming().diff(existing()).affectedKeys().hasOnly(['role', 'updatedAt']))
+      );
+
+      match /favorites/{toolId} {
+        allow read, write: if isSignedIn() && userId == request.auth.uid;
+      }
+    }
+
+    match /security_logs/{logId} {
+      allow create: if isSignedIn(); // System logs on behalf of user
+      allow read: if isAdmin();
+    }
+
+    match /messages/{msgId} {
+      allow read: if isSignedIn();
+      allow create: if isEmailVerified() && 
+                      isValidMessage(incoming()) &&
+                      getUserData().status == 'active';
+    }
+
+    match /system/config {
+      allow read: if isSignedIn();
+      allow write: if isOwner();
+    }
+
+    match /test/connection {
+      allow read: if true;
+    }
+  }
+}
