@@ -1,10 +1,10 @@
 {
-  "projectId": "serene-gearbox-v07pf",
-  "appId": "1:793732325194:web:891680643a38a2323debb3",
-  "apiKey": "AIzaSyDA1iWvr4Z3IMhzKNyT9utmUtyEfwyAcq4",
-  "authDomain": "serene-gearbox-v07pf.firebaseapp.com",
+  "projectId": "web-tools-3352e",
+  "appId": "1:116121414607:web:be41945e38953a28c000ba",
+  "apiKey": "AIzaSyBetI3YY8tAURwdf2AKYiXDsxjyiFN6qlU",
+  "authDomain": "web-tools-3352e.firebaseapp.com",
   "firestoreDatabaseId": "ai-studio-69a90949-c607-4521-a290-50568e4a329e",
-  "storageBucket": "serene-gearbox-v07pf.firebasestorage.app",
-  "messagingSenderId": "793732325194",
+  "storageBucket": "web-tools-3352e.firebasestorage.app",
+  "messagingSenderId": "116121414607",
   "measurementId": ""
 }
